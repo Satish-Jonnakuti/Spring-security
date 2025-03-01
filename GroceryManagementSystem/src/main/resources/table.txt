@@ -1,0 +1,44 @@
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,               -- Auto-incrementing product ID
+    name VARCHAR(255) NOT NULL,          -- Name of the product
+    url TEXT,                             -- URL for the product (changed to TEXT)
+    type VARCHAR(100),                    -- Type of the product
+    price DECIMAL(10, 2) NOT NULL,       -- Price of the product
+    quantity INT NOT NULL DEFAULT 1       -- Initial quantity set to 1
+);
+CREATE TABLE customers (
+    customer_id SERIAL PRIMARY KEY,       -- Auto-incrementing customer ID
+    name VARCHAR(255) NOT NULL,           -- Customer name
+    contact VARCHAR(15) NOT NULL,         -- Customer contact number
+    email VARCHAR(255) NOT NULL UNIQUE,    -- Customer email address (unique)
+    product_id BIGINT NOT NULL,           -- Foreign key to the product
+    total_cart_amount DECIMAL(10, 2) NOT NULL, -- Total cart amount
+    image_url TEXT                         -- URL of the customer's image (changed to TEXT)
+);
+CREATE TABLE cart (
+    cart_id SERIAL PRIMARY KEY,            -- Auto-incrementing cart ID
+    customer_id BIGINT NOT NULL,           -- Foreign key to the customer
+    product_id BIGINT NOT NULL,            -- Foreign key to the product
+    quantity INT NOT NULL DEFAULT 1,       -- Quantity of the product in the cart
+    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date when the product was added to the cart
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id), -- Foreign key constraint
+    FOREIGN KEY (product_id) REFERENCES products(id) -- Foreign key constraint
+);
+CREATE TABLE orders (
+    order_id SERIAL PRIMARY KEY,          -- Auto-incrementing order ID
+    customer_id BIGINT NOT NULL,          -- Foreign key to the customer
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the order
+    total_amount DECIMAL(10, 2) NOT NULL, -- Total amount for the order
+    status VARCHAR(50) NOT NULL DEFAULT 'Pending', -- Status of the order (e.g., Pending, Completed, Cancelled)
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) -- Foreign key constraint
+);
+CREATE TABLE transactions (
+    transaction_id SERIAL PRIMARY KEY, -- Unique identifier for each transaction
+    customer_id BIGINT NOT NULL, -- Assuming customer_id is of type BIGINT
+    product_id BIGINT NOT NULL, -- Foreign key referencing the products table
+    quantity INT NOT NULL, -- Quantity of the product purchased
+    amount DECIMAL(10, 2) NOT NULL, -- Total amount for the transaction
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the transaction
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE, -- Foreign key to customers table
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE -- Foreign key to products table
+);
